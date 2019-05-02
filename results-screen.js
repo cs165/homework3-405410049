@@ -13,6 +13,13 @@ class ResultsScreen {
 
   show(numberCorrect, numberWrong) {
     this.containerElement.classList.remove('inactive');
+	var select=this.containerElement.querySelector('#results .correct');
+	select.textContent=numberCorrect;
+	select=this.containerElement.querySelector('#results .incorrect');
+	select.textContent=numberWrong;
+	const percent=Math.round(numberCorrect/(numberCorrect+numberWrong)*100);
+	select=this.containerElement.querySelector('#results .percent');
+	select.textContent=percent;
   }
 
   hide() {
