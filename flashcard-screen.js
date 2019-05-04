@@ -17,9 +17,11 @@ class FlashcardScreen {
 	this.rightCnt=0;
 	this.wrongCnt=0;
 	this.cardId=0;
+	this.decks_len=0;
 	this.wrongArrIndex=1;
 	this.endchose=false;
 	this.wrongArr=new Array();
+	this.again_flag=false;
 	document.addEventListener('dragRight',this.onDragRight);
 	document.addEventListener('dragLeft',this.onDragLeft);
   }
@@ -42,14 +44,17 @@ class FlashcardScreen {
   {
 	//this.hide();
 	//this.card.classList.add('inacitve');
+	/*48-57 需要修改*/
 	this.rightCnt++;
-	let len=0,i,total=this.wrongCnt+this.rightCnt;
+	var i,len=0;
 	for(i=0;i<FLASHCARD_DECKS.length;i++)
-		if(FLASHCARD_DECKS[i].title==this.title)
-			break;
+	if(FLASHCARD_DECKS[i].title==this.title)
+		break;
 	for(let x in FLASHCARD_DECKS[i].words)
 		len++;
-	if(total==len)
+	this.decks_len=len;
+	let total=this.wrongCnt+this.rightCnt;
+	if(total==this.decks_len)
 	{
 		const eventInfo={
 			rightCnt:this.rightCnt,
@@ -59,10 +64,29 @@ class FlashcardScreen {
 	}
 	let parent=document.querySelector('#flashcard-container');
 	let child=document.querySelector('.flashcard-box');
-	parent.removeChild(child);
+	if(child!=null)
+		parent.removeChild(child);
 	const flashcardContainer = document.querySelector('#flashcard-container');
-	this.card=new Flashcard(flashcardContainer,this.title,this.rightCnt,this.wrongCnt,this.cardId);
-	this.cardId++;	
+	if(!this.again_flag)
+	{
+		this.card=new Flashcard(flashcardContainer,this.title,this.rightCnt,this.wrongCnt,this.cardId);
+		this.cardId++;
+	}
+	else
+	{
+		if(this.wrongArrIndex<this.wrongArr.length)
+		{
+			console.log("create wrongArr");
+			this.card=new Flashcard(flashcardContainer,this.title,this.rightCnt,this.wrongCnt,this.wrongArr[this.wrongArrIndex]);
+			this.wrongArr.splice(this.wrongArrIndex-1,1);
+			this.wrongArrIndex++;
+		}
+		else
+		{
+			this.wrongArrIndex=1;
+			//document.dispatchEvent('enchose');
+		}
+	}
 //	this.show(this.title,this.rightCnt,this.wrongCnt);
   }
   onDragLeft(event)
@@ -70,13 +94,16 @@ class FlashcardScreen {
 	//this.hide();
 	//this.card.classList.add('inacitve');
 	this.wrongCnt++;
-	let len=0,i,total=this.wrongCnt+this.rightCnt;
+	/*96-104 需要修改*/
+	var i,len=0;
 	for(i=0;i<FLASHCARD_DECKS.length;i++)
-		if(FLASHCARD_DECKS[i].title==this.title)
-			break;
+	if(FLASHCARD_DECKS[i].title==this.title)
+		break;
 	for(let x in FLASHCARD_DECKS[i].words)
 		len++;
-	if(total==len)
+	this.decks_len=len;
+	let total=this.wrongCnt+this.rightCnt;
+	if(total==this.decks_len)
 	{
 		const eventInfo={
 			rightCnt:this.rightCnt,
@@ -88,10 +115,22 @@ class FlashcardScreen {
 	this.wrongArr.push(event.detail.index);
 	let parent=document.querySelector('#flashcard-container');
 	let child=document.querySelector('.flashcard-box');
-	parent.removeChild(child);
+	if(child!=null)
+		parent.removeChild(child);
 	const flashcardContainer = document.querySelector('#flashcard-container');
-	this.card=new Flashcard(flashcardContainer,this.title,this.rightCnt,this.wrongCnt,this.cardId);
-	this.cardId++;
+	if(!this.again_flag)
+	{
+		this.card=new Flashcard(flashcardContainer,this.title,this.rightCnt,this.wrongCnt,this.cardId);
+		this.cardId++;
+	}
+	else
+	{
+		if(this.wrongArrIndex<this.wrongArr.length)
+		{
+			this.card=new Flashcard(flashcardContainer,this.title,this.rightCnt,this.wrongCnt,this.wrongArr[this.wrongArrIndex]);
+			this.wrongArrIndex++;
+		}
+	}
 //	this.show(this.title,this.rightCnt,this.wrongCnt);
   }
 }

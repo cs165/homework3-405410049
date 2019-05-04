@@ -93,12 +93,7 @@ class Flashcard {
 		this.flashcardElement.style='';
 	}
 	else
-	{	
-		//this.containerElement.style.transformDelay="2s";
-		//this.containerElement.style.transform='';
-		//this.containerElement.classList.add('release_middle');
 		this.flashcardElement.style.cssText="transition-duration:0.6s";
-	}
  }
   // Creates the DOM object representing a flashcard with the given
   // |frontText| and |backText| strings to display on the front and
@@ -113,7 +108,8 @@ class Flashcard {
   // </div>
   // and returns a reference to the root of that snippet, i.e. the
   // <div class="flashcard-box">
-  _createFlashcardDOM() {
+ 
+ _createFlashcardDOM() {
 	//chose the correct title	
 	var i,wordArr=new Array(),defArr=new Array(),j=0;;
 	for(i=0;i<FLASHCARD_DECKS.length;i++)
@@ -122,20 +118,9 @@ class Flashcard {
 	for(let x in FLASHCARD_DECKS[i].words)
 		wordArr[j++]=x;
 	j=0;
-	console.log("i:"+i);
     for(let x in FLASHCARD_DECKS[i].words)
 		defArr[j++]=FLASHCARD_DECKS[i].words[x];
-/*
-	let total=this.wrongCnt+this.rightCnt-2;
-	if(total==wordArr.length)
-	{
-		const eventInfo={
-			rightCnt:this.rightCnt,
-			wrongCnt:this.wrongCnt
-		};
-		document.dispatchEvent(new CustomEvent('endChose',{detail:eventInfo}));	
-	}
-	*/
+	
     const cardContainer = document.createElement('div');
     cardContainer.classList.add('flashcard-box');
     cardContainer.classList.add('show-word');
@@ -143,13 +128,11 @@ class Flashcard {
 	const wordSide = document.createElement('div');
     wordSide.classList.add('flashcard');
     wordSide.classList.add('word');
-    //wordSide.textContent = frontText;
     wordSide.textContent=wordArr[this.cardId];
 
     const definitionSide = document.createElement('div');
     definitionSide.classList.add('flashcard');
     definitionSide.classList.add('definition');
-   // definitionSide.textContent= backText;
     definitionSide.textContent=defArr[this.cardId];
 
     cardContainer.appendChild(wordSide);

@@ -14,6 +14,7 @@ class App {
 	this.hideMenu=this.hideMenu.bind(this);	
 	document.addEventListener('menuClick',this.hideMenu);
 	this.title=null;
+	this.continue_flag=false;
 	
     const mainElement = document.querySelector('#main');
     this.flashcards = new FlashcardScreen(mainElement);
@@ -29,9 +30,6 @@ class App {
 	select=document.querySelector('.continue');
 	select.addEventListener('click',this.again);
 
-    // Uncomment this pair of lines to see the "results" screen:
-    // this.menu.hide();
-    // this.results.show();
   }
    hideMenu(event)
 	{
@@ -48,7 +46,17 @@ class App {
 	 const wrongCnt=event.detail.wrongCnt;
 	 this.flashcards.hide();
      this.results.show(rightCnt,wrongCnt);
-	 console.log(this.flashcards.wrongArr);
+	 const select=document.querySelector('.continue');
+	 if(rightCnt==this.flashcards.decks_len)
+	 {
+		this.continue_flag=false;
+		select.textContent="start over";
+	 }
+	 else
+	 {
+		this.continue_flag=true;
+		select.textContent="continue";
+	 }
    }
    showMenu()
    {
@@ -60,31 +68,49 @@ class App {
 	 delete this.flashcards;
 	 let parent=document.querySelector('#flashcard-container');
 	 let child=document.querySelector('.flashcard-box');
-	 parent.removeChild(child);
+	 //在again可能已經remove過一遍
+	 if(child!=null)
+		parent.removeChild(child);
 	 const mainElement = document.querySelector('#main');
 	 this.flashcards = new FlashcardScreen(mainElement);
+	 this.flashcards.again_flag=false;
+	 console.log("new card"+this.flashcards.card);
    }
    //click continue or start over
    again()
    {
-	 const flashcard=this.flashcards;
-	 flashcard.rightCnt=flashcard.rightCnt-1;
-	 flashcard.wrongCnt=0;
-	 
-	 console.log(this.flashcards.rightCnt+","+this.flashcards.wrongCnt);
+	 var flashcard=this.flashcards;
 	 var wrongArr=flashcard.wrongArr,card,select;
 	 this.results.hide();
-	 	 this.flashcards.show(this.title);
 	 let parent=document.querySelector('#flashcard-container');
 	 let child=document.querySelector('.flashcard-box');
-	 parent.removeChild(child);
-
-	 select=document.querySelectorAll('.status span');
-	 select[0].textContent=flashcard.rightCnt;
-	 select[1].textContent=flashcard.wrongCnt;
-	 const flashcardContainer = document.querySelector('#flashcard-container');
-	// for(let x of wrongArr)
-	  flashcard.card = new Flashcard(flashcardContainer,this.title,this.flashcards.rightCnt,this.flashcards.wrongCnt,wrongArr[0]);
-  
+	 if(child!=null)
+		parent.removeChild(child);
+	 if(this.continue_flag)	//continue
+	 {	
+	 	this.flashcards.show(this.title);
+		flashcard.rightCnt=flashcard.rightCnt;
+		flashcard.wrongCnt=0;
+		select=document.querySelectorAll('.status span');
+		select[0].textContent=flashcard.rightCnt;
+		select[1].textContent=flashcard.wrongCnt;
+		const flashcardContainer = document.querySelector('#flashcard-container');
+		// for(let x of wrongArr)
+		if(wrongArr.length!=0)
+		{
+			flashcard.card = new Flashcard(flashcardContainer,this.title,this.flashcards.rightCnt,this.flashcards.wrongCnt,wrongArr[0]);
+			flashcard.again_flag=true;
+		}
+	 }
+	 else	//strat over
+	 {
+		delete this.flashcards;
+		const mainElement = document.querySelector('#main');
+		this.flashcards = new FlashcardScreen(mainElement);
+		this.flashcards.show(this.title,0,0);
+		const select=document.querySelectorAll('.status span')
+		for(let x of select)
+			x.textContent=0;
+	 }
    }
 }
